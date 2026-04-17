@@ -9,6 +9,7 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import CountryPage from "./pages/CountryPage.tsx";
 import BusinessPage from "./pages/BusinessPage.tsx";
+import CommunitiesPage from "./pages/CommunitiesPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -46,7 +47,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/country/:slug" element={<CountryPage />} />
           <Route path="/business" element={<BusinessPage />} />
-          <Route path="/communities" element={<ComingSoon title="Сообщества Ковчега" />} />
+          <Route path="/communities" element={<CommunitiesPage />} />
           <Route path="/help" element={<ComingSoon title="Помощь и поддержка" />} />
           <Route path="/education" element={<ComingSoon title="Языки и образование" />} />
           <Route path="/advocacy" element={<ComingSoon title="Адвокация" />} />
