@@ -75,8 +75,8 @@ const stats = [
 const team = [
   {
     name: "Анастасия Буракова",
-    role: "Основательница «Ковчега»",
-    bio: "Юристка, правозащитница, экс-координатор проекта «Правозащита Открытки» и проекта поддержки кандидатов на местных выборах «Объединённые демократы». Преподавательница Bazaleti Uni и Свободного университета, автор курсов по менеджменту, адвокации и юридическим аспектам работы организаций.",
+    role: "Основатель «Ковчега»",
+    bio: "Юрист, правозащитник, экс-координатор проекта «Правозащита Открытки» и проекта поддержки кандидатов на местных выборах «Объединённые демократы». Преподаватель Bazaleti Uni и Свободного университета, автор курсов по менеджменту, адвокации и юридическим аспектам работы организаций.",
     city: "—",
     photo: anastasiaPhoto,
     socials: [],
@@ -266,8 +266,8 @@ export default function AboutPage() {
                         src={member.photo}
                         alt={member.name}
                         loading="lazy"
-                        className="h-full w-full object-cover scale-[1.45] object-top"
-                        style={{ objectPosition: "50% 22%" }}
+                        className="absolute inset-0 h-full w-full object-cover scale-[1.3]"
+                        style={{ objectPosition: "50% 30%" }}
                       />
                       {/* Brand vignette overlay */}
                       <div
