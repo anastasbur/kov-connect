@@ -255,15 +255,31 @@ export default function AboutPage() {
                 key={member.name}
                 className="group rounded-3xl border border-border/40 bg-card p-6 shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all flex flex-col items-center text-center"
               >
-                {/* Round avatar */}
-                <div className="relative mb-5">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <img
-                    src={member.photo}
-                    alt={member.name}
-                    loading="lazy"
-                    className="relative h-28 w-28 rounded-full object-cover ring-4 ring-background shadow-soft"
-                  />
+                {/* Round avatar with brand vignette */}
+                <div className="relative mb-5 h-32 w-32">
+                  {/* Hover glow */}
+                  <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-primary/40 to-accent/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {/* Brand gradient ring */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-secondary p-[3px] shadow-soft">
+                    <div className="relative h-full w-full rounded-full overflow-hidden bg-background ring-2 ring-background">
+                      <img
+                        src={member.photo}
+                        alt={member.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover scale-[1.45] object-top"
+                        style={{ objectPosition: "50% 22%" }}
+                      />
+                      {/* Brand vignette overlay */}
+                      <div
+                        className="pointer-events-none absolute inset-0 rounded-full"
+                        style={{
+                          background:
+                            "radial-gradient(circle at 50% 35%, transparent 45%, hsl(var(--primary) / 0.18) 78%, hsl(var(--primary) / 0.45) 100%)",
+                          mixBlendMode: "multiply",
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <h3 className="text-lg font-extrabold tracking-tight">{member.name}</h3>
