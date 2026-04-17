@@ -9,9 +9,13 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import CountryPage from "./pages/CountryPage.tsx";
 import BusinessPage from "./pages/BusinessPage.tsx";
-import CommunitiesPage from "./pages/CommunitiesPage.tsx";
+import CommunitiesPage from "@/pages/CommunitiesPage";
 import HelpPage from "@/pages/HelpPage";
 import EducationPage from "@/pages/EducationPage";
+import AboutPage from "@/pages/AboutPage";
+import DonatePage from "@/pages/DonatePage";
+import StoriesPage from "@/pages/StoriesPage";
+import AdvocacyPage from "@/pages/AdvocacyPage";
 
 const queryClient = new QueryClient();
 
@@ -52,10 +56,10 @@ const App = () => (
           <Route path="/communities" element={<CommunitiesPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/education" element={<EducationPage />} />
-          <Route path="/advocacy" element={<ComingSoon title="Адвокация" />} />
-          <Route path="/about" element={<ComingSoon title="О Ковчеге" />} />
-          <Route path="/donate" element={<ComingSoon title="Поддержать проект" />} />
-          <Route path="/stories" element={<ComingSoon title="Эмиграция в лицах" />} />
+          <Route path="/advocacy" element={<AdvocacyPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/donate" element={<DonatePage />} />
+          <Route path="/stories" element={<StoriesPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
