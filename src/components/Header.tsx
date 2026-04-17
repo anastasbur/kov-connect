@@ -11,7 +11,7 @@ const menus = [
       { label: "Юридическая помощь", href: "/help#legal" },
       { label: "Экстренное жильё", href: "/help#housing" },
       { label: "Психологическая помощь", href: "/help#psy" },
-      { label: "База знаний", href: "/help#kb" },
+      { label: "База знаний", href: "/knowledge" },
     ],
   },
   {
