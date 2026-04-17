@@ -8,6 +8,7 @@ import { Quotes } from "@/components/home/Quotes";
 import { Timeline } from "@/components/home/Timeline";
 import { CtaBlock } from "@/components/home/CtaBlock";
 import { MediaStrip } from "@/components/home/MediaStrip";
+import { WorldMapSection } from "@/components/home/WorldMapSection";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
         <Stats />
         <DiasporaStrong />
         <Solutions />
+        <WorldMapSection />
         <Quotes />
         <Timeline />
         <CtaBlock />
