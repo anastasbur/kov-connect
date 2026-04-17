@@ -368,6 +368,11 @@ export default function AboutPage() {
                   className="inline-flex items-center gap-2 text-primary font-medium hover:underline">
                   @KovchegAdsBot <ArrowUpRight size={13} />
                 </a>
+                <p className="pt-2">По вопросам крупных пожертвований и системного партнёрства между организациями:</p>
+                <a href="mailto:team@kovcheg.live"
+                  className="inline-flex items-center gap-2 text-primary font-medium hover:underline">
+                  team@kovcheg.live <ArrowUpRight size={13} />
+                </a>
                 <p className="pt-2">Телеграм-канал:</p>
                 <a href="https://t.me/ArkHelps" target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-primary font-medium hover:underline">
