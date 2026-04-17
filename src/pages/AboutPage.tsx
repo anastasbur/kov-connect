@@ -216,6 +216,76 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* Team */}
+        <section id="team">
+          <div className="mb-10 max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-3">Команда</p>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-5">
+              Кто стоит за <span className="text-primary">Ковчегом</span>
+            </h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Команда Ковчега — это 20 человек: координаторы направлений, юристы, методисты, редактор,
+              специалист по безопасности и многие другие. Нам ежедневно помогают более 300 волонтёров —
+              модераторов, психологов, преподавателей — и ещё несколько тысяч человек, которые готовы
+              помочь по отдельным вопросам. Из-за ярлыка «иноагента» мы бережно относимся к тем членам
+              команды, кто пожелал сохранить анонимность.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
+            {team.map((member) => (
+              <article
+                key={member.name}
+                className="group rounded-3xl border border-border/40 bg-card overflow-hidden shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all flex flex-col sm:flex-row"
+              >
+                {/* Photo placeholder */}
+                <div
+                  aria-hidden
+                  className="relative w-full sm:w-40 h-40 sm:h-auto shrink-0 bg-gradient-to-br from-primary/20 via-accent/15 to-primary/5 flex items-center justify-center"
+                >
+                  <span className="text-5xl font-extrabold text-primary/40 select-none">
+                    {member.name.charAt(0)}
+                  </span>
+                  <span className="absolute bottom-2 right-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70 bg-background/70 backdrop-blur px-2 py-0.5 rounded-full">
+                    фото
+                  </span>
+                </div>
+
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-lg font-extrabold tracking-tight">{member.name}</h3>
+                  <p className="text-sm font-semibold text-primary mt-1">{member.role}</p>
+                  {member.bio && (
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{member.bio}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Откуда: <span className="text-foreground/80">{member.city}</span>
+                  </p>
+
+                  {member.socials.length > 0 && (
+                    <div className="mt-4 flex items-center gap-2 pt-4 border-t border-border/40">
+                      {member.socials.map((s) => {
+                        const Icon = socialIcon[s.type as keyof typeof socialIcon] ?? Globe;
+                        return (
+                          <a
+                            key={s.url}
+                            href={s.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${member.name} — ${s.type}`}
+                            className="h-8 w-8 rounded-full border border-border/60 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary hover:bg-primary/5 transition-colors"
+                          >
+                            <Icon size={14} />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         {/* Media */}
         <section id="media">
           <div className="mb-10">
