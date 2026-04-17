@@ -249,55 +249,53 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((member) => (
               <article
                 key={member.name}
-                className="group rounded-3xl border border-border/40 bg-card overflow-hidden shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all flex flex-col sm:flex-row"
+                className="group rounded-3xl border border-border/40 bg-card p-6 shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all flex flex-col items-center text-center"
               >
-                {/* Photo placeholder */}
-                <div
-                  aria-hidden
-                  className="relative w-full sm:w-40 h-40 sm:h-auto shrink-0 bg-gradient-to-br from-primary/20 via-accent/15 to-primary/5 flex items-center justify-center"
-                >
-                  <span className="text-5xl font-extrabold text-primary/40 select-none">
-                    {member.name.charAt(0)}
-                  </span>
-                  <span className="absolute bottom-2 right-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70 bg-background/70 backdrop-blur px-2 py-0.5 rounded-full">
-                    фото
-                  </span>
+                {/* Round avatar */}
+                <div className="relative mb-5">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <img
+                    src={member.photo}
+                    alt={member.name}
+                    loading="lazy"
+                    className="relative h-28 w-28 rounded-full object-cover ring-4 ring-background shadow-soft"
+                  />
                 </div>
 
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="text-lg font-extrabold tracking-tight">{member.name}</h3>
-                  <p className="text-sm font-semibold text-primary mt-1">{member.role}</p>
-                  {member.bio && (
-                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{member.bio}</p>
-                  )}
+                <h3 className="text-lg font-extrabold tracking-tight">{member.name}</h3>
+                <p className="text-sm font-semibold text-primary mt-1">{member.role}</p>
+                {member.bio && (
+                  <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{member.bio}</p>
+                )}
+                {member.city && member.city !== "—" && (
                   <p className="text-xs text-muted-foreground mt-3">
                     Откуда: <span className="text-foreground/80">{member.city}</span>
                   </p>
+                )}
 
-                  {member.socials.length > 0 && (
-                    <div className="mt-4 flex items-center gap-2 pt-4 border-t border-border/40">
-                      {member.socials.map((s) => {
-                        const Icon = socialIcon[s.type as keyof typeof socialIcon] ?? Globe;
-                        return (
-                          <a
-                            key={s.url}
-                            href={s.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`${member.name} — ${s.type}`}
-                            className="h-8 w-8 rounded-full border border-border/60 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary hover:bg-primary/5 transition-colors"
-                          >
-                            <Icon size={14} />
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                {member.socials.length > 0 && (
+                  <div className="mt-5 flex items-center justify-center gap-2 pt-4 border-t border-border/40 w-full">
+                    {member.socials.map((s) => {
+                      const Icon = socialIcon[s.type as keyof typeof socialIcon] ?? Globe;
+                      return (
+                        <a
+                          key={s.url}
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${member.name} — ${s.type}`}
+                          className="h-8 w-8 rounded-full border border-border/60 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary hover:bg-primary/5 transition-colors"
+                        >
+                          <Icon size={14} />
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
               </article>
             ))}
           </div>
