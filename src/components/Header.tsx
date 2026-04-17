@@ -27,7 +27,7 @@ const menus = [
     items: [
       { label: "По странам (карта диаспор)", href: "/communities#map" },
       { label: "По профессиям", href: "/communities#prof" },
-      { label: "Предприниматели в эмиграции", href: "/communities#biz" },
+      { label: "Ковчег Бизнес", href: "/business" },
       { label: "Уязвимые группы", href: "/communities#vulnerable" },
     ],
   },
