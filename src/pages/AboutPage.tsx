@@ -1,6 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Sailboat, ArrowUpRight, ExternalLink } from "lucide-react";
+import { Sailboat, ArrowUpRight, ExternalLink, Twitter, Instagram, Facebook, Linkedin, Send, Globe } from "lucide-react";
 
 const timeline = [
   {
