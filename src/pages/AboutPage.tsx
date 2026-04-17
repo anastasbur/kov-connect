@@ -1,6 +1,11 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Sailboat, ArrowUpRight, ExternalLink, Twitter, Instagram, Facebook, Linkedin, Send, Globe } from "lucide-react";
+import evgenyPhoto from "@/assets/team/evgeny.webp";
+import yanPhoto from "@/assets/team/yan.jpg";
+import katyaPhoto from "@/assets/team/katya.jpg";
+import vasilyPhoto from "@/assets/team/vasily.jpg";
+import anastasiaPhoto from "@/assets/team/anastasia.jpg";
 
 const timeline = [
   {
@@ -69,10 +74,19 @@ const stats = [
 
 const team = [
   {
+    name: "Анастасия Буракова",
+    role: "Основательница «Ковчега»",
+    bio: "Юристка, правозащитница. Создала проект в марте 2022 года в ответ на преследование антивоенных россиян.",
+    city: "—",
+    photo: anastasiaPhoto,
+    socials: [],
+  },
+  {
     name: "Евгений Фомичев",
     role: "Координатор чатов взаимопомощи",
     bio: "Социальный волонтёр, доброволец в ведомствах по делам беженцев",
     city: "Санкт-Петербург",
+    photo: evgenyPhoto,
     socials: [
       { type: "x", url: "https://x.com/flyersuerte" },
       { type: "instagram", url: "https://www.instagram.com/flyersuerte" },
@@ -83,6 +97,7 @@ const team = [
     role: "Координатор экстренной помощи",
     bio: "",
     city: "Санкт-Петербург",
+    photo: yanPhoto,
     socials: [
       { type: "telegram", url: "https://t.me/kovchegkoordinator" },
     ],
@@ -92,6 +107,7 @@ const team = [
     role: "Менеджер проекта «Первым рейсом»",
     bio: "Специалист по фандрайзингу и коммуникациям в НКО",
     city: "Москва",
+    photo: katyaPhoto,
     socials: [
       { type: "linkedin", url: "https://www.linkedin.com/in/ekaterina-sharapova-783217346/" },
     ],
@@ -101,6 +117,7 @@ const team = [
     role: "Координатор проекта «Ковчег Бизнес»",
     bio: "Экс-руководитель социального проекта «Доброшрифт», занимался спецпроектами с бизнес-структурами",
     city: "Тюмень",
+    photo: vasilyPhoto,
     socials: [
       { type: "facebook", url: "https://www.facebook.com/vasgorshkov" },
       { type: "instagram", url: "https://www.instagram.com/vasilevskyrus/" },
