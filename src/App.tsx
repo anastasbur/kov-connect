@@ -10,6 +10,8 @@ import NotFound from "./pages/NotFound.tsx";
 import CountryPage from "./pages/CountryPage.tsx";
 import BusinessPage from "./pages/BusinessPage.tsx";
 import CommunitiesPage from "./pages/CommunitiesPage.tsx";
+import HelpPage from "@/pages/HelpPage";
+import EducationPage from "@/pages/EducationPage";
 
 const queryClient = new QueryClient();
 
@@ -48,8 +50,8 @@ const App = () => (
           <Route path="/country/:slug" element={<CountryPage />} />
           <Route path="/business" element={<BusinessPage />} />
           <Route path="/communities" element={<CommunitiesPage />} />
-          <Route path="/help" element={<ComingSoon title="Помощь и поддержка" />} />
-          <Route path="/education" element={<ComingSoon title="Языки и образование" />} />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/education" element={<EducationPage />} />
           <Route path="/advocacy" element={<ComingSoon title="Адвокация" />} />
           <Route path="/about" element={<ComingSoon title="О Ковчеге" />} />
           <Route path="/donate" element={<ComingSoon title="Поддержать проект" />} />
