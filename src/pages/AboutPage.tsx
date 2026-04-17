@@ -67,6 +67,57 @@ const stats = [
   { num: "4 года", label: "вместе" },
 ];
 
+const team = [
+  {
+    name: "Евгений Фомичев",
+    role: "Координатор чатов взаимопомощи",
+    bio: "Социальный волонтёр, доброволец в ведомствах по делам беженцев",
+    city: "Санкт-Петербург",
+    socials: [
+      { type: "x", url: "https://x.com/flyersuerte" },
+      { type: "instagram", url: "https://www.instagram.com/flyersuerte" },
+    ],
+  },
+  {
+    name: "Ян",
+    role: "Координатор экстренной помощи",
+    bio: "",
+    city: "Санкт-Петербург",
+    socials: [
+      { type: "telegram", url: "https://t.me/kovchegkoordinator" },
+    ],
+  },
+  {
+    name: "Катя Шарапова",
+    role: "Менеджер проекта «Первым рейсом»",
+    bio: "Специалист по фандрайзингу и коммуникациям в НКО",
+    city: "Москва",
+    socials: [
+      { type: "linkedin", url: "https://www.linkedin.com/in/ekaterina-sharapova-783217346/" },
+    ],
+  },
+  {
+    name: "Василий Горшков",
+    role: "Координатор проекта «Ковчег Бизнес»",
+    bio: "Экс-руководитель социального проекта «Доброшрифт», занимался спецпроектами с бизнес-структурами",
+    city: "Тюмень",
+    socials: [
+      { type: "facebook", url: "https://www.facebook.com/vasgorshkov" },
+      { type: "instagram", url: "https://www.instagram.com/vasilevskyrus/" },
+    ],
+  },
+] as const;
+
+const socialIcon = {
+  x: Twitter,
+  twitter: Twitter,
+  instagram: Instagram,
+  facebook: Facebook,
+  linkedin: Linkedin,
+  telegram: Send,
+  web: Globe,
+} as const;
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
