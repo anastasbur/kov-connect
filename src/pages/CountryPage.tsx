@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { getCountryBySlug, COUNTRIES } from "@/data/countries";
+import { COMMUNITIES_BY_COUNTRY } from "@/data/communities";
 import {
   ExternalLink,
   MapPin,
@@ -195,8 +196,54 @@ export default function CountryPage() {
                 </div>
               </section>
             )}
+
+            {(COMMUNITIES_BY_COUNTRY[country.nameRu]?.length ?? 0) > 0 && (
+              <section>
+                <h2 className="text-2xl font-bold mb-2">
+                  Тематические сообщества
+                </h2>
+                <p className="text-muted-foreground text-sm mb-5">
+                  Чаты и каналы по интересам, городам и темам жизни в стране
+                </p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {COMMUNITIES_BY_COUNTRY[country.nameRu].map((c, i) => (
+                    <a
+                      key={i}
+                      href={c.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex flex-col gap-2 p-5 rounded-3xl border border-border/40 bg-card shadow-soft hover:shadow-elevated hover:-translate-y-0.5 transition-all"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="font-semibold text-sm leading-snug group-hover:text-primary">
+                          {c.title}
+                        </h3>
+                        <ExternalLink
+                          size={14}
+                          className="text-muted-foreground shrink-0 mt-0.5"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {c.description}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 mt-1">
+                        {c.tags.map((t) => (
+                          <span
+                            key={t}
+                            className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#D9E3FF] text-primary"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
           </>
         )}
+
 
         {/* BUSINESSES TAB */}
         {activeTab === "businesses" && (
