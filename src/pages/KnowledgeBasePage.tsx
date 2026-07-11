@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { plural, MATERIALS, SYMBOLS } from "@/lib/ru";
 import {
   Search, X, ExternalLink, Loader2, BookOpen,
-  Sparkles, Globe, Tag, ChevronDown
+  Sparkles, Globe, Tag, ChevronDown, Copy, Check,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -38,15 +40,20 @@ interface CardItem {
 // ─── API helpers ──────────────────────────────────────────────────────────────
 
 const WP = "https://kovcheg.live/wp-json/wp/v2";
+const MIN_QUERY = 2;
 
 function strip(html: string) {
   return html
     .replace(/<[^>]*>/g, "")
     .replace(/&nbsp;/g, " ")
+    .replace(/&#8230;/g, "…")
     .replace(/\[…\]/g, "…")
     .replace(/\u200b/g, "")
     .trim();
 }
+
+// нормализация для поиска: нижний регистр + ё→е
+const norm = (s: string) => s.toLowerCase().replace(/ё/g, "е");
 
 async function loadCards(): Promise<CardItem[]> {
   const all: CardItem[] = [];
@@ -88,39 +95,43 @@ async function loadTerms(taxonomy: string): Promise<WPTerm[]> {
   return terms.filter((t) => t.count > 0).sort((a, b) => b.count - a.count);
 }
 
-// ─── Claude semantic search ───────────────────────────────────────────────────
+// ─── Локальный поиск ──────────────────────────────────────────────────────────
+// Мгновенный, работает без бэкенда. Требует, чтобы все слова запроса
+// встречались в материале (заголовок / описание / тема / страна),
+// ранжирует совпадения в заголовке выше.
 
-async function claudeSearch(query: string, cards: CardItem[]): Promise<number[]> {
-  const index = cards
-    .map((c) => `${c.id}|${c.title}|${c.excerpt.slice(0, 90)}`)
-    .join("\n");
+function searchCards(
+  query: string,
+  cards: CardItem[],
+  themes: WPTerm[],
+  countries: WPTerm[]
+): CardItem[] {
+  const tokens = norm(query).split(/\s+/).filter((t) => t.length >= 2);
+  if (!tokens.length) return [];
+  const themeName = (id: number) => themes.find((t) => t.id === id)?.name ?? "";
+  const countryName = (id: number) => countries.find((c) => c.id === id)?.name ?? "";
 
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 300,
-        messages: [
-          {
-            role: "user",
-            content:
-              `Ты помощник в базе знаний для русскоязычных эмигрантов.\n\n` +
-              `Запрос: "${query}"\n\n` +
-              `Статьи (id|заголовок|описание):\n${index.slice(0, 9000)}\n\n` +
-              `Верни JSON-массив из максимум 9 id самых релевантных статей. ` +
-              `Только JSON, без пояснений: [id1,id2,...]`,
-          },
-        ],
-      }),
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return JSON.parse(data.content?.[0]?.text?.trim() ?? "[]").map(Number);
-  } catch {
-    return [];
+  const scored: { card: CardItem; score: number }[] = [];
+  for (const c of cards) {
+    const title = norm(c.title);
+    const meta = norm(
+      `${c.excerpt} ${c.themes.map(themeName).join(" ")} ${c.countries.map(countryName).join(" ")}`
+    );
+    let score = 0;
+    let matchesAll = true;
+    for (const tok of tokens) {
+      const inTitle = title.includes(tok);
+      const inMeta = meta.includes(tok);
+      if (!inTitle && !inMeta) {
+        matchesAll = false;
+        break;
+      }
+      score += inTitle ? 3 : 1;
+    }
+    if (matchesAll) scored.push({ card: c, score });
   }
+  scored.sort((a, b) => b.score - a.score);
+  return scored.map((s) => s.card);
 }
 
 // ─── Single card ──────────────────────────────────────────────────────────────
@@ -136,6 +147,9 @@ function KnowledgeCard({
   countries: WPTerm[];
   highlight?: boolean;
 }) {
+  const [copied, setCopied] = useState(false);
+  const url = `https://kovcheg.live/cards/${card.slug}/`;
+
   const themeNames = card.themes
     .map((id) => themes.find((t) => t.id === id)?.name)
     .filter(Boolean) as string[];
@@ -143,12 +157,26 @@ function KnowledgeCard({
     .map((id) => countries.find((c) => c.id === id)?.name)
     .filter(Boolean) as string[];
 
+  const copyLink = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  };
+
   return (
-    <a
-      href={`https://kovcheg.live/cards/${card.slug}/`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`group flex flex-col rounded-3xl border bg-card p-6 shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all ${
+    <div
+      className={`group relative flex flex-col rounded-3xl border bg-card p-6 shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all ${
         highlight ? "border-primary/40 ring-1 ring-primary/20" : "border-border/40"
       }`}
     >
@@ -179,15 +207,21 @@ function KnowledgeCard({
         ))}
       </div>
 
-      <h3 className="font-bold text-base leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
-        {card.title}
-      </h3>
-
-      {card.excerpt && (
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1">
-          {card.excerpt}
-        </p>
-      )}
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex flex-col flex-1"
+      >
+        <h3 className="font-bold text-base leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
+          {card.title}
+        </h3>
+        {card.excerpt && (
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1">
+            {card.excerpt}
+          </p>
+        )}
+      </a>
 
       <div className="mt-4 flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
@@ -197,12 +231,38 @@ function KnowledgeCard({
             year: "numeric",
           })}
         </span>
-        <ExternalLink
-          size={14}
-          className="text-muted-foreground group-hover:text-primary transition-colors shrink-0"
-        />
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={copyLink}
+            aria-label="Скопировать ссылку на материал"
+            title={copied ? "Ссылка скопирована" : "Скопировать ссылку"}
+            className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs text-muted-foreground hover:text-primary hover:bg-[#F0F4FF] transition-colors"
+          >
+            {copied ? (
+              <>
+                <Check size={13} className="text-green-600" />
+                <span className="text-green-600">Скопировано</span>
+              </>
+            ) : (
+              <>
+                <Copy size={13} />
+                <span>Ссылка</span>
+              </>
+            )}
+          </button>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Открыть материал"
+            className="p-1.5 rounded-full text-muted-foreground hover:text-primary hover:bg-[#F0F4FF] transition-colors"
+          >
+            <ExternalLink size={14} />
+          </a>
+        </div>
       </div>
-    </a>
+    </div>
   );
 }
 
@@ -215,16 +275,13 @@ export default function KnowledgeBasePage() {
   const [loading, setLoading] = useState(true);
 
   const [query, setQuery] = useState("");
-  const [searching, setSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<number[] | null>(null);
-
   const [activeTheme, setActiveTheme] = useState<number | null>(null);
   const [activeCountry, setActiveCountry] = useState<number | null>(null);
   const [showAllThemes, setShowAllThemes] = useState(false);
   const [showAllCountries, setShowAllCountries] = useState(false);
   const [visible, setVisible] = useState(24);
 
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     Promise.all([
@@ -239,50 +296,48 @@ export default function KnowledgeBasePage() {
     });
   }, []);
 
-  const handleSearch = useCallback(
-    (val: string) => {
-      setQuery(val);
+  // Предвыбор страны при переходе со страницы страны: /knowledge?country=Германия
+  useEffect(() => {
+    const wanted = searchParams.get("country");
+    if (!wanted || !countries.length) return;
+    const term = countries.find((c) => norm(c.name) === norm(wanted));
+    if (term) {
+      setActiveCountry(term.id);
       setActiveTheme(null);
-      setActiveCountry(null);
-      clearTimeout(timer.current);
-      if (!val.trim()) {
-        setSearchResults(null);
-        return;
-      }
-      if (val.trim().length < 3) return;
-      timer.current = setTimeout(async () => {
-        setSearching(true);
-        setSearchResults(await claudeSearch(val, cards));
-        setSearching(false);
-        setVisible(24);
-      }, 700);
-    },
-    [cards]
-  );
+      setQuery("");
+    }
+  }, [searchParams, countries]);
 
-  function clearAll() {
-    setQuery("");
-    setSearchResults(null);
-    setActiveTheme(null);
-    setActiveCountry(null);
-    setVisible(24);
-  }
+  const isSearching = query.trim().length >= MIN_QUERY;
 
-  const displayed = (() => {
-    if (searchResults !== null)
-      return searchResults
-        .map((id) => cards.find((c) => c.id === id))
-        .filter(Boolean) as CardItem[];
+  const displayed = useMemo(() => {
+    if (isSearching) return searchCards(query, cards, themes, countries);
     return cards.filter((c) => {
       if (activeTheme && !c.themes.includes(activeTheme)) return false;
       if (activeCountry && !c.countries.includes(activeCountry)) return false;
       return true;
     });
-  })();
+  }, [isSearching, query, activeTheme, activeCountry, cards, themes, countries]);
+
+  function handleSearch(val: string) {
+    setQuery(val);
+    setActiveTheme(null);
+    setActiveCountry(null);
+    setVisible(24);
+  }
+
+  function clearAll() {
+    setQuery("");
+    setActiveTheme(null);
+    setActiveCountry(null);
+    setVisible(24);
+  }
 
   const paged = displayed.slice(0, visible);
   const hasMore = displayed.length > visible;
   const hasFilter = !!(query || activeTheme !== null || activeCountry !== null);
+  const rest = displayed.length - visible;
+  const missing = MIN_QUERY - query.length;
 
   const THEME_LIMIT = showAllThemes ? themes.length : 10;
   const COUNTRY_LIMIT = showAllCountries ? countries.length : 8;
@@ -297,51 +352,50 @@ export default function KnowledgeBasePage() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-primary shadow-soft mb-5">
               <BookOpen size={13} />
-              {loading ? "Загружаем…" : `${cards.length}+ материалов`}
+              {loading
+                ? "Загружаем…"
+                : `${cards.length} ${plural(cards.length, MATERIALS)}`}
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
               База знаний
             </h1>
             <p className="text-muted-foreground text-lg mb-8 max-w-xl">
               Инструкции, вебинары и гайды по юридическим вопросам, жизни в
-              эмиграции и трудоустройству в разных странах. Введите вопрос —
-              ИИ найдёт нужное.
+              эмиграции и трудоустройству в разных странах. Введите ключевое
+              слово или выберите тему и страну.
             </p>
 
             {/* Search bar */}
             <div className="relative max-w-xl">
               <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                {searching ? (
-                  <Loader2 size={18} className="text-primary animate-spin" />
-                ) : (
-                  <Search size={18} className="text-muted-foreground" />
-                )}
+                <Search size={18} className="text-muted-foreground" />
               </div>
               <input
                 type="text"
                 value={query}
                 onChange={(e) => handleSearch(e.target.value)}
-                placeholder='Например: "ВНЖ в Германии", "открыть счёт", "убежище"'
+                placeholder='Например: «ВНЖ Германия», «открыть счёт», «убежище»'
                 className="w-full pl-11 pr-10 py-3.5 rounded-2xl border border-[#D9E3FF] bg-white text-sm outline-none focus:border-primary shadow-soft placeholder:text-muted-foreground/60"
               />
               {query && (
                 <button
                   onClick={clearAll}
+                  aria-label="Очистить поиск"
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   <X size={16} />
                 </button>
               )}
             </div>
-            {!searching && searchResults !== null && query.length >= 3 && (
+            {isSearching && !loading && (
               <p className="mt-2.5 text-xs text-muted-foreground flex items-center gap-1.5">
-                <Sparkles size={11} className="text-primary" />
-                ИИ нашёл {searchResults.length} релевантных материалов
+                <Search size={11} className="text-primary" />
+                Найдено: {displayed.length} {plural(displayed.length, MATERIALS)}
               </p>
             )}
-            {query.length > 0 && query.length < 3 && (
+            {query.length > 0 && query.length < MIN_QUERY && (
               <p className="mt-2.5 text-xs text-muted-foreground">
-                Ещё {3 - query.length} символа для поиска…
+                Ещё {missing} {plural(missing, SYMBOLS)} для поиска…
               </p>
             )}
           </div>
@@ -353,10 +407,9 @@ export default function KnowledgeBasePage() {
         <div className="flex flex-col lg:flex-row gap-10">
 
           {/* Sidebar */}
-          {!loading && !query && (
+          {!loading && !isSearching && (
             <aside className="lg:w-56 xl:w-64 shrink-0">
 
-              {/* Active filters */}
               {hasFilter && (
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
@@ -495,7 +548,7 @@ export default function KnowledgeBasePage() {
                 <p className="text-4xl mb-3">🔍</p>
                 <p className="font-semibold mb-1">Ничего не найдено</p>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Попробуйте другой запрос или другую категорию
+                  Попробуйте другое ключевое слово или выберите тему в списке слева
                 </p>
                 <button
                   onClick={clearAll}
@@ -507,12 +560,12 @@ export default function KnowledgeBasePage() {
             ) : (
               <>
                 <p className="text-sm text-muted-foreground mb-6">
-                  {searchResults !== null
-                    ? `ИИ-поиск по «${query}»: ${displayed.length} материалов`
+                  {isSearching
+                    ? `Поиск по «${query}»: ${displayed.length} ${plural(displayed.length, MATERIALS)}`
                     : activeTheme !== null
-                    ? `${displayed.length} материалов — тема «${themes.find((t) => t.id === activeTheme)?.name}»`
+                    ? `${displayed.length} ${plural(displayed.length, MATERIALS)} — тема «${themes.find((t) => t.id === activeTheme)?.name}»`
                     : activeCountry !== null
-                    ? `${displayed.length} материалов — страна «${countries.find((c) => c.id === activeCountry)?.name}»`
+                    ? `${displayed.length} ${plural(displayed.length, MATERIALS)} — страна «${countries.find((c) => c.id === activeCountry)?.name}»`
                     : `Все материалы: ${displayed.length}`}
                 </p>
 
@@ -523,7 +576,7 @@ export default function KnowledgeBasePage() {
                       card={card}
                       themes={themes}
                       countries={countries}
-                      highlight={searchResults !== null && i === 0}
+                      highlight={isSearching && i === 0}
                     />
                   ))}
                 </div>
@@ -534,7 +587,7 @@ export default function KnowledgeBasePage() {
                       onClick={() => setVisible((v) => v + 24)}
                       className="bg-muted text-foreground px-8 py-3 rounded-full font-medium hover:bg-[#D9E3FF] transition-colors"
                     >
-                      Показать ещё ({displayed.length - visible} материалов)
+                      Показать ещё ({rest} {plural(rest, MATERIALS)})
                     </button>
                   </div>
                 )}
