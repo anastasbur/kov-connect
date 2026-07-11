@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import { Search } from "lucide-react";
 import { COUNTRIES } from "@/data/countries";
+
+const norm = (s: string) => s.toLowerCase().replace(/ё/g, "е").trim();
 
 const GEO_URL =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
