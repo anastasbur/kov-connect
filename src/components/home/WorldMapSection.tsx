@@ -11,6 +11,39 @@ const GEO_URL =
 
 export const WorldMapSection = () => {
   const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  const matches = query.trim()
+    ? COUNTRIES.filter((c) => norm(c.nameRu).includes(norm(query))).slice(0, 8)
+    : [];
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  const select = (slug: string) => {
+    setOpen(false);
+    setQuery("");
+    navigate(`/country/${slug}`);
+  };
+
+  const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!matches.length) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); setActiveIdx((i) => (i + 1) % matches.length); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActiveIdx((i) => (i - 1 + matches.length) % matches.length); }
+    else if (e.key === "Enter") { e.preventDefault(); select(matches[activeIdx].slug); }
+    else if (e.key === "Escape") setOpen(false);
+  };
+
 
   return (
     <section className="py-20 md:py-28 bg-background">
