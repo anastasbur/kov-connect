@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { locative } from "@/lib/ru";
 import { getCountryBySlug, COUNTRIES } from "@/data/countries";
 import { COMMUNITIES_BY_COUNTRY } from "@/data/communities";
 import {
@@ -33,11 +34,83 @@ const ICON_COLORS = {
   community: "text-[#6F8DFF] bg-[#F0F4FF]",
 };
 
+// ─── База знаний по стране (WordPress REST API) ────────────────────────────────
+
+const WP = "https://kovcheg.live/wp-json/wp/v2";
+
+interface KbCard {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string;
+}
+
+function stripHtml(html: string) {
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#8230;/g, "…")
+    .replace(/\[…\]/g, "…")
+    .replace(/\u200b/g, "")
+    .trim();
+}
+
+const normName = (s: string) => (s ?? "").toLowerCase().replace(/ё/g, "е").trim();
+
+// Материалы базы знаний, привязанные к стране через таксономию card_countries.
+async function fetchCountryCards(nameRu: string): Promise<KbCard[]> {
+  const tRes = await fetch(`${WP}/card_countries?per_page=100&_fields=id,name,slug`);
+  if (!tRes.ok) return [];
+  const terms: { id: number; name: string; slug: string }[] = await tRes.json();
+  const term = terms.find((t) => normName(t.name) === normName(nameRu));
+  if (!term) return [];
+
+  const cRes = await fetch(
+    `${WP}/card?card_countries=${term.id}&per_page=6&status=publish&_fields=id,slug,title,excerpt`
+  );
+  if (!cRes.ok) return [];
+  const data: {
+    id: number;
+    slug: string;
+    title: { rendered: string };
+    excerpt: { rendered: string };
+  }[] = await cRes.json();
+
+  return data
+    .map((c) => ({
+      id: c.id,
+      slug: c.slug,
+      title: stripHtml(c.title.rendered),
+      excerpt: stripHtml(c.excerpt.rendered),
+    }))
+    .filter((c) => c.title && !c.title.toLowerCase().includes("черновик"));
+}
+
 export default function CountryPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const country = getCountryBySlug(slug || "");
   const [activeTab, setActiveTab] = useState<Tab>("communities");
+  const [kbCards, setKbCards] = useState<KbCard[]>([]);
+
+  useEffect(() => {
+    if (!country) {
+      setKbCards([]);
+      return;
+    }
+    let cancelled = false;
+    fetchCountryCards(country.nameRu)
+      .then((cards) => {
+        if (!cancelled) setKbCards(cards);
+      })
+      .catch(() => {
+        if (!cancelled) setKbCards([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [country?.slug]);
 
   if (!country) {
     return (
@@ -148,14 +221,14 @@ export default function CountryPage() {
           <>
             <section>
               <h2 className="text-2xl font-bold mb-5">
-                Главное сообщество в {country.nameRu}
+                Главное сообщество {locative(country.nameRu)}
               </h2>
               <div className="bg-[#F0F4FF] rounded-3xl p-7 flex flex-col md:flex-row md:items-center gap-6 border border-[#D9E3FF]">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">💬</span>
                     <h3 className="font-bold text-lg">
-                      Чат взаимопомощи для россиян в {country.nameRu}
+                      Чат взаимопомощи для россиян {locative(country.nameRu)}
                     </h3>
                   </div>
                   <p className="text-muted-foreground text-sm mb-5">
@@ -359,12 +432,70 @@ export default function CountryPage() {
           </section>
         )}
 
+        {/* KNOWLEDGE BASE FOR THIS COUNTRY */}
+        {kbCards.length > 0 && (
+          <section>
+            <div className="flex items-end justify-between gap-4 mb-5">
+              <div>
+                <h2 className="text-2xl font-bold mb-1">
+                  База знаний {locative(country.nameRu)}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  Инструкции и гайды «Ковчега», связанные со страной
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  navigate(`/knowledge?country=${encodeURIComponent(country.nameRu)}`)
+                }
+                className="hidden md:inline-flex items-center gap-1 text-sm text-primary font-medium hover:underline shrink-0"
+              >
+                Все материалы →
+              </button>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {kbCards.map((c) => (
+                <a
+                  key={c.id}
+                  href={`https://kovcheg.live/cards/${c.slug}/`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col gap-2 p-5 rounded-3xl border border-border/40 bg-card shadow-soft hover:shadow-elevated hover:-translate-y-0.5 transition-all"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="font-semibold text-sm leading-snug group-hover:text-primary">
+                      {c.title}
+                    </h3>
+                    <ExternalLink
+                      size={14}
+                      className="text-muted-foreground shrink-0 mt-0.5"
+                    />
+                  </div>
+                  {c.excerpt && (
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                      {c.excerpt}
+                    </p>
+                  )}
+                </a>
+              ))}
+            </div>
+            <button
+              onClick={() =>
+                navigate(`/knowledge?country=${encodeURIComponent(country.nameRu)}`)
+              }
+              className="md:hidden mt-4 w-full text-center text-sm text-primary font-medium hover:underline"
+            >
+              Все материалы в базе знаний →
+            </button>
+          </section>
+        )}
+
         {/* CTA */}
         <section className="rounded-3xl bg-primary p-8 md:p-10 text-center text-primary-foreground">
           <h3 className="text-xl font-bold mb-2">Не нашли что искали?</h3>
           <p className="text-primary-foreground/70 text-sm mb-6">
-            Знаете полезную организацию или место в {country.nameRu}? Добавьте
-            — поможете другим.
+            Знаете полезную организацию или место {locative(country.nameRu)}?
+            Добавьте — поможете другим.
           </p>
           <a
             href="https://forms.gle/MuuyxgMsiA5NUEQD9"
