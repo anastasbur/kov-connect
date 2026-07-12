@@ -55,20 +55,20 @@ const timeline = [
 ];
 
 const media = [
-  { name: "Washington Post", url: "https://www.washingtonpost.com/world/2023/02/13/russia-diaspora-war-ukraine" },
-  { name: "BBC", url: "https://www.bbc.co.uk/sounds/play/w3ct6cks" },
-  { name: "Foreign Policy", url: "https://foreignpolicy.com/2022/11/28/russian-exiles-emigres-disaspora-anti-putin-ukraine-war-opposition/" },
-  { name: "Forbes", url: "https://www.forbes.ru/forbeslife/470567-mesto-gde-mozno-otdysat-sa-kak-emigranty-sozdaut-soobsestva-i-pomogaut-drug-drugu" },
-  { name: "Meduza", url: "https://meduza.io/feature/2022/04/05/mesto-gde-budet-vozmozhnost-otdyshatsya" },
-  { name: "Новая газета Европа", url: "https://novayagazeta.eu/articles/2022/11/30/russkii-kovcheg" },
-  { name: "Republic", url: "https://republic.ru/posts/104757" },
-  { name: "Популярная политика", url: "https://www.youtube.com/watch?v=q-d9mYNDOoc" },
+  { name: "The Washington Post", url: "https://www.washingtonpost.com/world/2023/02/13/russia-diaspora-war-ukraine", type: "Текст", title: "Диаспора антивоенных россиян", featured: true },
+  { name: "Foreign Policy", url: "https://foreignpolicy.com/2022/11/28/russian-exiles-emigres-disaspora-anti-putin-ukraine-war-opposition/", type: "Аналитика", title: "Русские эмигранты против войны", featured: true },
+  { name: "Meduza", url: "https://meduza.io/feature/2022/04/05/mesto-gde-budet-vozmozhnost-otdyshatsya", type: "Репортаж", title: "«Место, где можно отдышаться»", featured: true },
+  { name: "Forbes", url: "https://www.forbes.ru/forbeslife/470567-mesto-gde-mozno-otdysat-sa-kak-emigranty-sozdaut-soobsestva-i-pomogaut-drug-drugu", type: "Текст", title: "Как эмигранты создают сообщества", featured: true },
+  { name: "BBC", url: "https://www.bbc.co.uk/sounds/play/w3ct6cks", type: "Подкаст", title: "О русской эмиграции" },
+  { name: "Новая газета Европа", url: "https://novayagazeta.eu/articles/2022/11/30/russkii-kovcheg", type: "Текст", title: "«Русский Ковчег»" },
+  { name: "Republic", url: "https://republic.ru/posts/104757", type: "Текст", title: "О помощи эмигрантам" },
+  { name: "Популярная политика", url: "https://www.youtube.com/watch?v=q-d9mYNDOoc", type: "Видео", title: "Интервью с командой" },
 ];
 
 const stats = [
-  { num: "210 000", label: "получили поддержку" },
-  { num: "70", label: "стран присутствия" },
-  { num: "3 500", label: "волонтёров" },
+  { num: "220 000", label: "получили помощь" },
+  { num: "49", label: "стран с сообществами" },
+  { num: "350 000+", label: "аудитория сообществ" },
   { num: "4 года", label: "вместе" },
 ];
 
@@ -319,16 +319,50 @@ export default function AboutPage() {
 
         {/* Media */}
         <section id="media">
-          <div className="mb-10">
+          <div className="mb-8">
             <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-3">Пресса</p>
             <h2 className="text-3xl font-extrabold tracking-tight">О нас пишут</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl">
+              Десятки публикаций в российских и международных СМИ — тексты, интервью, подкасты и видео.
+            </p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              {["Текст", "Интервью", "Аналитика", "Подкаст", "Видео"].map((t) => (
+                <span key={t} className="text-xs px-3 py-1 rounded-full bg-muted text-foreground/70">
+                  {t}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-            {media.map((item) => (
+
+          {/* Featured outlets */}
+          <div className="grid gap-4 md:grid-cols-2 mb-4">
+            {media.filter((m) => m.featured).map((item) => (
               <a key={item.name} href={item.url} target="_blank" rel="noopener noreferrer"
-                className="group flex items-center justify-between p-5 rounded-3xl border border-border/40 bg-card shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all">
-                <span className="font-bold text-foreground/70 group-hover:text-primary transition-colors">{item.name}</span>
-                <ExternalLink size={14} className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                className="group flex flex-col justify-between gap-5 p-6 rounded-3xl border border-border/40 bg-card shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all min-h-[150px]">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-primary bg-[#D9E3FF] px-2.5 py-1 rounded-full">
+                    {item.type}
+                  </span>
+                  <ExternalLink size={15} className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                </div>
+                <div>
+                  <p className="text-lg font-extrabold group-hover:text-primary transition-colors">{item.name}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{item.title}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          {/* Other outlets */}
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+            {media.filter((m) => !m.featured).map((item) => (
+              <a key={item.name} href={item.url} target="_blank" rel="noopener noreferrer"
+                className="group flex flex-col gap-1 p-4 rounded-2xl border border-border/40 bg-card shadow-soft hover:shadow-elevated hover:-translate-y-0.5 transition-all">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-sm text-foreground/80 group-hover:text-primary transition-colors">{item.name}</span>
+                  <ExternalLink size={12} className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                </div>
+                <span className="text-[11px] text-muted-foreground">{item.type} · {item.title}</span>
               </a>
             ))}
           </div>

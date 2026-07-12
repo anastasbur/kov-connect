@@ -57,6 +57,44 @@ const positions = [
   },
 ];
 
+const reports = [
+  {
+    org: "IPHR × «Ковчег»",
+    year: "2026",
+    title: "Invisible Citizens: Statelessness and Identity",
+    desc: "Россияне без действительных документов: истекающие загранпаспорта и риск фактического безгражданства в ЕС. Анализ Анастасии Бураковой.",
+    url: "https://iphronline.org/wp-content/uploads/2026/05/report-the-ark-x-iphr-.pdf",
+  },
+  {
+    org: "Friedrich Naumann Foundation",
+    year: "2025",
+    title: "Exiled and at Risk",
+    desc: "Policy paper Анастасии Бураковой о рисках для антивоенных россиян и белорусов в эмиграции и о мерах их защиты.",
+    url: "https://www.freiheit.org/sites/default/files/2025-12/exiled-and-at-risk.pdf",
+  },
+  {
+    org: "«Ковчег» × «Первым рейсом»",
+    year: "2025",
+    title: "Антивоенная Россия: внутри страны и в изгнании",
+    desc: "Доклад Анастасии Бураковой и Евы Раппопорт об антивоенном движении россиян по обе стороны границы.",
+    url: "https://firstflight.today/anastasiya-burakova-i-eva-rappoport-podgotovili-doklad-antivoennaya-rossiya-vnutri-strany-i-v-izgnanii/",
+  },
+  {
+    org: "German Marshall Fund",
+    year: "2023",
+    title: "Building Up the Democratic Potential of the New Russian Emigration",
+    desc: "Исследование GMF о демократическом потенциале новой российской эмиграции — при участии «Ковчега».",
+    url: "https://www.gmfus.org/sites/default/files/2023-03/Schmies%20-%20Russian%20emigrants%20-%20paper%20-%20web.pdf",
+  },
+  {
+    org: "«Ковчег»",
+    year: "2026",
+    title: "Транснациональные репрессии против россиян за рубежом",
+    desc: "Анализ депортаций, экстрадиций и политически мотивированного преследования антивоенных россиян (по материалам The Moscow Times).",
+    url: "https://www.themoscowtimes.com/2026/07/07/turkeys-deportation-of-anti-war-russian-signals-growing-risks-for-kremlin-critics-abroad-a93170",
+  },
+];
+
 export default function AdvocacyPage() {
   return (
     <div className="min-h-screen bg-background">
@@ -109,6 +147,34 @@ export default function AdvocacyPage() {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        {/* Reports */}
+        <section>
+          <div className="mb-8">
+            <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-3">Доклады и исследования</p>
+            <h2 className="text-3xl font-extrabold tracking-tight">Что мы публикуем</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl leading-relaxed">
+              Аналитика о положении антивоенных россиян — самостоятельно и вместе с
+              международными партнёрами: IPHR, Friedrich Naumann Foundation, German
+              Marshall Fund.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {reports.map((r) => (
+              <a key={r.title} href={r.url} target="_blank" rel="noopener noreferrer"
+                className="group flex flex-col gap-3 p-6 rounded-3xl border border-border/40 bg-card shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary bg-[#D9E3FF] px-3 py-1 rounded-full">
+                    <FileText size={12} /> {r.org} · {r.year}
+                  </span>
+                  <ExternalLink size={14} className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                </div>
+                <h3 className="font-bold leading-snug group-hover:text-primary transition-colors">{r.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{r.desc}</p>
+              </a>
+            ))}
           </div>
         </section>
 
