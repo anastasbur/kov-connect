@@ -206,6 +206,45 @@ export default function BusinessPage() {
         </div>
       </section>
 
+      {/* Платформа специалистов cross-promo */}
+      <section className="pt-20 md:pt-28">
+        <div className="container-kovcheg">
+          <div className="rounded-3xl bg-gradient-to-br from-primary to-[#1d3f9a] p-8 md:p-12 text-white">
+            <div className="grid gap-8 md:grid-cols-2 md:items-center">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-secondary mb-3">
+                  Новый сервис Ковчега
+                </p>
+                <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-4">
+                  Специалисты и услуги
+                </h3>
+                <p className="text-white/80 leading-relaxed">
+                  Нужен юрист, бухгалтер, маркетолог или другой проверенный
+                  специалист для вашего дела? Или вы сами оказываете услуги
+                  предпринимателям? Платформа с ИИ-подбором соединяет специалистов
+                  и клиентов внутри диаспоры — опишите запрос, а система подберёт
+                  подходящего человека.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 md:items-end">
+                <a
+                  href="https://joinpro.store/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-white text-primary px-6 py-3 rounded-full font-semibold hover:bg-[#F0F4FF] transition-colors"
+                >
+                  Открыть платформу <ArrowUpRight className="h-4 w-4" />
+                </a>
+                <p className="text-xs text-white/60 md:text-right max-w-xs">
+                  Специалистом или клиентом — контактами обмениваетесь только при
+                  взаимном согласии.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Первым Рейсом cross-promo */}
       <section className="py-20 md:py-28">
         <div className="container-kovcheg">

@@ -344,6 +344,31 @@ export default function EducationPage() {
           </a>
         </div>
 
+        {/* Личный специалист (платформа) */}
+        <div className="mt-6 rounded-3xl border border-primary/20 bg-[#F0F4FF] p-8 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="max-w-xl">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary shadow-soft">
+              Новое
+            </span>
+            <h3 className="mt-3 text-xl font-bold mb-2">
+              Нужна не группа, а личный специалист?
+            </h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Ментор, карьерный консультант, репетитор один-на-один или помощь с
+              нострификацией диплома? На платформе специалистов Ковчега ИИ
+              подберёт проверенного профи под ваш запрос и поможет связаться.
+            </p>
+          </div>
+          <a
+            href="https://joinpro.store/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full text-sm font-semibold hover:bg-primary/90 transition-colors"
+          >
+            Найти специалиста <ArrowUpRight size={13} />
+          </a>
+        </div>
+
         {/* Teachers CTA */}
         <div className="mt-6 rounded-3xl bg-muted/60 border border-border/40 p-7 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
