@@ -9,20 +9,23 @@ type MenuGroup = { label: string; items: MenuItem[] | null; href?: string };
 
 const menus: MenuGroup[] = [
   {
-    label: "Помощь и поддержка",
+    label: "Помощь",
     items: [
-      { label: "Юридическая помощь", href: "/help#legal" },
+      { label: "Правовая помощь при преследовании", href: "/help#legal" },
       { label: "Экстренное жильё", href: "/help#housing" },
       { label: "Психологическая помощь", href: "/help#psy" },
+      { label: "Разговорные клубы (бесплатно)", href: "/help#languages" },
+      { label: "Ковчег VPN", href: "https://t.me/kovchegvpnbot", external: true },
       { label: "База знаний", href: "/knowledge" },
     ],
   },
   {
-    label: "Языки и образование",
+    label: "Услуги",
     items: [
-      { label: "Языковые курсы (бесплатно)", href: "/education#free" },
-      { label: "Интеграционные курсы (платно)", href: "/education#integration" },
-      { label: "Подготовка к экзаменам (платно)", href: "/education#exams" },
+      { label: "Языковые группы", href: "/education#free" },
+      { label: "Интеграционные курсы", href: "/education#integration" },
+      { label: "Подготовка к экзаменам", href: "/education#exams" },
+      { label: "Специалисты и услуги", href: "https://joinpro.store/", external: true, badge: "Новое" },
     ],
   },
   {
@@ -30,7 +33,6 @@ const menus: MenuGroup[] = [
     items: [
       { label: "По странам (карта диаспор)", href: "/communities#map" },
       { label: "По профессиям", href: "/communities#prof" },
-      { label: "Специалисты и услуги", href: "https://joinpro.store/", external: true, badge: "Новое" },
       { label: "Ковчег Бизнес", href: "/business" },
       { label: "Уязвимые группы", href: "/communities#vulnerable" },
     ],
@@ -40,6 +42,7 @@ const menus: MenuGroup[] = [
     label: "Кто мы?",
     items: [
       { label: "О Ковчеге", href: "/about" },
+      { label: "Истории (эмиграция в лицах)", href: "/stories" },
       { label: "СМИ о нас", href: "/about#media" },
       { label: "Отчёты", href: "/about#reports" },
       { label: "Контакты", href: "/about#contacts" },
