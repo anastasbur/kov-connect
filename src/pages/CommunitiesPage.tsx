@@ -157,6 +157,44 @@ export default function CommunitiesPage() {
           </div>
         </section>
 
+        {/* ── Специалисты и услуги (платформа) ─────────────── */}
+        <section id="specialists">
+          <div className="rounded-3xl border border-primary/20 bg-card shadow-soft p-8 md:p-10">
+            <div className="grid gap-8 md:grid-cols-2 md:items-center">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-2">
+                  Найти профи среди своих
+                </p>
+                <h2 className="text-3xl font-extrabold tracking-tight mb-4">
+                  Специалисты и услуги
+                </h2>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  Профессиональные чаты — про общение и обмен опытом. А если нужен
+                  конкретный специалист (или вы хотите предлагать свои услуги
+                  сообществу) — на платформе Ковчега ИИ подбирает подходящего
+                  человека под запрос и помогает обменяться контактами.
+                </p>
+                <a
+                  href="https://joinpro.store/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold text-sm hover:bg-primary/90 transition-colors"
+                >
+                  Открыть платформу <ArrowUpRight size={13} />
+                </a>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {["Опишите запрос", "ИИ подбирает специалиста", "Взаимное согласие", "Обмен контактами"].map((item, i) => (
+                  <div key={item} className="rounded-2xl bg-[#F0F4FF] p-4 text-sm font-medium text-foreground/80">
+                    <span className="mr-2 font-bold text-primary">{i + 1}</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── Kovcheg Business ─────────────────────────────── */}
         <section id="biz">
           <div className="rounded-3xl bg-gradient-to-br from-primary to-[#1d3f9a] p-8 md:p-12 text-white">

@@ -62,6 +62,33 @@ export const Solutions = () => {
             </Link>
           ))}
         </div>
+
+        {/* AI-платформа подбора специалистов */}
+        <a
+          href="https://joinpro.store/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group mt-6 flex flex-col gap-6 rounded-3xl border border-primary/20 bg-card p-8 shadow-soft transition-all hover:shadow-elevated md:flex-row md:items-center md:justify-between"
+        >
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+              Новое · развитие потенциала
+            </span>
+            <h3 className="mt-4 text-2xl md:text-3xl font-extrabold tracking-tight">
+              Специалисты и услуги
+            </h3>
+            <p className="mt-3 text-muted-foreground leading-relaxed">
+              ИИ подбирает проверенного специалиста под ваш запрос — юриста,
+              психолога, карьерного консультанта, репетитора. А специалистам
+              помогает находить клиентов среди своих. Поддерживаем экономическую
+              активность диаспоры.
+            </p>
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground transition-colors group-hover:bg-primary/90">
+            Открыть платформу
+            <ArrowUpRight className="h-4 w-4" />
+          </span>
+        </a>
       </div>
     </section>
   );

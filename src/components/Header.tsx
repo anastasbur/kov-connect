@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Menu, X, Anchor } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const menus = [
+type MenuItem = { label: string; href: string; external?: boolean; badge?: string };
+type MenuGroup = { label: string; items: MenuItem[] | null; href?: string };
+
+const menus: MenuGroup[] = [
   {
     label: "Помощь и поддержка",
     items: [
@@ -27,6 +30,7 @@ const menus = [
     items: [
       { label: "По странам (карта диаспор)", href: "/communities#map" },
       { label: "По профессиям", href: "/communities#prof" },
+      { label: "Специалисты и услуги", href: "https://joinpro.store/", external: true, badge: "Новое" },
       { label: "Ковчег Бизнес", href: "/business" },
       { label: "Уязвимые группы", href: "/communities#vulnerable" },
     ],
@@ -43,9 +47,25 @@ const menus = [
   },
 ];
 
+const itemInner = (it: MenuItem) => (
+  <>
+    {it.label}
+    {it.badge && (
+      <span className="ml-2 rounded-full bg-secondary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+        {it.badge}
+      </span>
+    )}
+  </>
+);
+
 export const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMobileMenu, setOpenMobileMenu] = useState<string | null>(null);
+
+  const desktopItemClass =
+    "flex items-center rounded-xl px-4 py-2.5 text-sm text-foreground/85 hover:bg-muted hover:text-primary transition-colors";
+  const mobileItemClass =
+    "flex items-center py-2 text-sm text-foreground/75 hover:text-primary";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/85 backdrop-blur-xl">
@@ -68,17 +88,25 @@ export const Header = () => {
                   {m.label}
                   <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
                 </button>
-                <div className="absolute left-0 top-full pt-2 min-w-[260px] opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200">
+                <div className="absolute left-0 top-full pt-2 min-w-[280px] opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200">
                   <div className="rounded-2xl border border-border/60 bg-card p-2 shadow-elevated">
-                    {m.items.map((it) => (
-                      <Link
-                        key={it.label}
-                        to={it.href}
-                        className="block rounded-xl px-4 py-2.5 text-sm text-foreground/85 hover:bg-muted hover:text-primary transition-colors"
-                      >
-                        {it.label}
-                      </Link>
-                    ))}
+                    {m.items.map((it) =>
+                      it.external ? (
+                        <a
+                          key={it.label}
+                          href={it.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={desktopItemClass}
+                        >
+                          {itemInner(it)}
+                        </a>
+                      ) : (
+                        <Link key={it.label} to={it.href} className={desktopItemClass}>
+                          {itemInner(it)}
+                        </Link>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -124,16 +152,29 @@ export const Header = () => {
                 </button>
                 {openMobileMenu === m.label && (
                   <div className="pl-4 pb-2 space-y-1">
-                    {m.items.map((it) => (
-                      <Link
-                        key={it.label}
-                        to={it.href}
-                        onClick={() => setMobileOpen(false)}
-                        className="block py-2 text-sm text-foreground/75 hover:text-primary"
-                      >
-                        {it.label}
-                      </Link>
-                    ))}
+                    {m.items.map((it) =>
+                      it.external ? (
+                        <a
+                          key={it.label}
+                          href={it.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setMobileOpen(false)}
+                          className={mobileItemClass}
+                        >
+                          {itemInner(it)}
+                        </a>
+                      ) : (
+                        <Link
+                          key={it.label}
+                          to={it.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={mobileItemClass}
+                        >
+                          {itemInner(it)}
+                        </Link>
+                      )
+                    )}
                   </div>
                 )}
               </div>
