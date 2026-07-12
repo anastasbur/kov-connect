@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -7,6 +7,7 @@ import { getCountryBySlug, COUNTRIES } from "@/data/countries";
 import { COMMUNITIES_BY_COUNTRY } from "@/data/communities";
 import {
   ExternalLink,
+  ArrowRight,
   MapPin,
   Phone,
   Users,
@@ -455,18 +456,16 @@ export default function CountryPage() {
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               {kbCards.map((c) => (
-                <a
+                <Link
                   key={c.id}
-                  href={`https://kovcheg.live/cards/${c.slug}/`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  to={`/knowledge/${c.slug}`}
                   className="group flex flex-col gap-2 p-5 rounded-3xl border border-border/40 bg-card shadow-soft hover:shadow-elevated hover:-translate-y-0.5 transition-all"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-semibold text-sm leading-snug group-hover:text-primary">
                       {c.title}
                     </h3>
-                    <ExternalLink
+                    <ArrowRight
                       size={14}
                       className="text-muted-foreground shrink-0 mt-0.5"
                     />
@@ -476,7 +475,7 @@ export default function CountryPage() {
                       {c.excerpt}
                     </p>
                   )}
-                </a>
+                </Link>
               ))}
             </div>
             <button

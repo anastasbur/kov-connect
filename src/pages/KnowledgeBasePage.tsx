@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { plural, MATERIALS, SYMBOLS } from "@/lib/ru";
 import {
-  Search, X, ExternalLink, Loader2, BookOpen,
+  Search, X, ArrowRight, Loader2, BookOpen,
   Sparkles, Globe, Tag, ChevronDown, Copy, Check,
 } from "lucide-react";
 
@@ -148,7 +148,8 @@ function KnowledgeCard({
   highlight?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
-  const url = `https://kovcheg.live/cards/${card.slug}/`;
+  const url = `/knowledge/${card.slug}`;
+  const shareUrl = `${window.location.origin}/knowledge/${card.slug}`;
 
   const themeNames = card.themes
     .map((id) => themes.find((t) => t.id === id)?.name)
@@ -161,10 +162,10 @@ function KnowledgeCard({
     e.preventDefault();
     e.stopPropagation();
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl);
     } catch {
       const ta = document.createElement("textarea");
-      ta.value = url;
+      ta.value = shareUrl;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand("copy");
@@ -207,12 +208,7 @@ function KnowledgeCard({
         ))}
       </div>
 
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex flex-col flex-1"
-      >
+      <Link to={url} className="flex flex-col flex-1">
         <h3 className="font-bold text-base leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
           {card.title}
         </h3>
@@ -221,7 +217,7 @@ function KnowledgeCard({
             {card.excerpt}
           </p>
         )}
-      </a>
+      </Link>
 
       <div className="mt-4 flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
@@ -251,15 +247,13 @@ function KnowledgeCard({
               </>
             )}
           </button>
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to={url}
             aria-label="Открыть материал"
             className="p-1.5 rounded-full text-muted-foreground hover:text-primary hover:bg-[#F0F4FF] transition-colors"
           >
-            <ExternalLink size={14} />
-          </a>
+            <ArrowRight size={14} />
+          </Link>
         </div>
       </div>
     </div>
